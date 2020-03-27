@@ -43,9 +43,9 @@ func initConfigurationFile() {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			logrus.Fatalf("Unable to find configuration file at: %v\n%v\n", configFile, err)
+			logrus.Fatalf("Unable to find configuration file at: %v\n%v", configFile, err)
 		} else {
-			logrus.Fatalf("Unable to read configuration: %v\n", err)
+			logrus.Fatalf("Unable to read configuration: %v", err)
 		}
 	}
 
@@ -68,5 +68,5 @@ func initLogger() {
 	}
 
 	logrus.SetOutput(logWriter)
-	logrus.SetLevel(logrus.WarnLevel)
+	logrus.SetLevel(logrus.InfoLevel)
 }
