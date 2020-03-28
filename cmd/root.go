@@ -51,7 +51,7 @@ func initConfigurationFile() {
 
 }
 
-const logFileDir = "fabapp.log"
+const logFileDir = "logs/fabapp.log"
 
 func initLogger() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
@@ -61,7 +61,7 @@ func initLogger() {
 	var logWriter io.Writer
 
 	if err != nil {
-		logrus.Warningf("Unable to open configuration file at %v. Using stdout for logging", logFileDir)
+		logrus.Warningf("Unable to open log file at %v. Using stdout for logging", logFileDir)
 		logWriter = os.Stdout
 	} else {
 		logWriter = io.MultiWriter(os.Stdout, logFile)

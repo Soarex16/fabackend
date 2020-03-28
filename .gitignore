@@ -14,5 +14,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# KDE folder file
+.directory
+
 # Configuration file
 config.json
+
+# Logs
+logs/
