@@ -6,12 +6,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config - stores application configuration
 type Config struct {
 	Port               int
 	DbConnectionString string
 	JwtSecret          []byte
 }
 
+// InitConfiguration - reads config and performs validation
 func InitConfiguration() (*Config, error) {
 	cfg := &Config{
 		Port:               viper.GetInt("port"),
@@ -20,15 +22,15 @@ func InitConfiguration() (*Config, error) {
 	}
 
 	if cfg.Port == 0 {
-		return nil, fmt.Errorf("'port' must be specified in configuration file!")
+		return nil, fmt.Errorf("'port' must be specified in configuration file")
 	}
 
 	if len(cfg.DbConnectionString) == 0 {
-		return nil, fmt.Errorf("'dbConnectionString' must be specified in configuration file!")
+		return nil, fmt.Errorf("'dbConnectionString' must be specified in configuration file")
 	}
 
 	if len(cfg.JwtSecret) == 0 {
-		return nil, fmt.Errorf("'jwtSecret' must be specified in configuration file!")
+		return nil, fmt.Errorf("'jwtSecret' must be specified in configuration file")
 	}
 
 	return cfg, nil

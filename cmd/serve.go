@@ -19,14 +19,18 @@ var serveCmd = &cobra.Command{
 			logrus.Fatalf("Unable to start application: %v", err)
 		}
 
-		addr := fmt.Sprintf(":%v", application.Config.Port)
+		defer application.Context.DB.Close()
 
+		addr := fmt.Sprintf(":%v", application.Config.Port)
 		logrus.Infof("Starting server at port %v", addr)
+
 		logrus.Fatal(http.ListenAndServe(addr, application.Router))
 
 		return nil
 	},
 }
+
+//TODO: метод, который осуществляет корректное завершение работы приложения (и закрывает коннект к бд)
 
 func init() {
 	rootCmd.AddCommand(serveCmd)

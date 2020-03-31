@@ -1,15 +1,25 @@
 package app
 
 import (
+	"database/sql"
+
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
+	ctx "github.com/soarex16/fabackend/context"
 	"github.com/soarex16/fabackend/routes"
+
+	// register postgres driver
+	_ "github.com/lib/pq"
 )
 
+// App - global application data
 type App struct {
-	Config *Config
-	Router *mux.Router
+	Config  *Config
+	Context *ctx.Context
+	Router  *mux.Router
 }
 
+// New - initializes configuration, routes, db
 func New() (app *App, err error) {
 	app = &App{}
 	app.Config, err = InitConfiguration()
@@ -18,11 +28,21 @@ func New() (app *App, err error) {
 		return nil, err
 	}
 
-	//TODO: коннект в субд, и т.д.
+	db, err := sql.Open("postgres", app.Config.DbConnectionString)
 
-	app.Router = routes.New()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		logrus.Fatalf("Cannot ping database")
+		return nil, err
+	}
+
+	app.Context = &ctx.Context{DB: db}
+
+	appRoutes := routes.GetAll(app.Context)
+	app.Router = routes.NewRouter(appRoutes)
 
 	return app, err
 }
-
-//TODO: метод, который осуществляет корректное завершение работы приложения
