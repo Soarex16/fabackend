@@ -35,7 +35,7 @@ var populateDbCmd = &cobra.Command{
 
 			CREATE TABLE users (
 				id uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-				username varchar(50),
+				username varchar(50) UNIQUE,
 				email varchar(320),
 				-- SHA-1 hashed
 				password char(64) NOT NULL

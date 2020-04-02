@@ -24,8 +24,8 @@ type Routes []Route
 func GetAll(appCtx *ctx.Context) *Routes {
 	var routes = Routes{
 		Route{"Index", "GET", "/", false, Index},
-		Route{"AddUserAchievement", "POST", "/achievements/{userId}", true, handlers.AddUserAchievement(appCtx)},
-		Route{"GetUserAchievements", "GET", "/achievements/{userId}", true, handlers.GetUserAchievements(appCtx)},
+		Route{"AddUserAchievement", "POST", "/users/{username}/achievements", true, handlers.AddUserAchievement(appCtx)},
+		Route{"GetUserAchievements", "GET", "/users/{username}/achievements", true, handlers.GetUserAchievements(appCtx)},
 
 		Route{"GetAllCources", "GET", "/courses", false, handlers.GetAllCources(appCtx)},
 

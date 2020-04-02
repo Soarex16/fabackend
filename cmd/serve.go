@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/soarex16/fabackend/app"
@@ -59,8 +60,10 @@ var serveCmd = &cobra.Command{
 func newServer(app *app.App) *http.Server {
 	addr := fmt.Sprintf(":%v", (*app).Config.Port)
 	server := http.Server{
-		Addr:    addr,
-		Handler: (*app).Router,
+		Addr:         addr,
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		Handler:      (*app).Router,
 	}
 
 	return &server
