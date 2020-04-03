@@ -21,7 +21,7 @@ var serveCmd = &cobra.Command{
 
 		defer func() {
 			logrus.Info("Closing database connection")
-			application.Context.DB.Close()
+			application.Store.DB.Close()
 		}()
 
 		if err != nil {
@@ -68,8 +68,6 @@ func newServer(app *app.App) *http.Server {
 
 	return &server
 }
-
-//TODO: метод, который осуществляет корректное завершение работы приложения (и закрывает коннект к бд)
 
 func init() {
 	rootCmd.AddCommand(serveCmd)

@@ -14,7 +14,7 @@ var rootCmd = &cobra.Command{
 	Use:   "faback",
 	Short: "Fitness App backend",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Usage()
+		_ = cmd.Usage()
 	},
 }
 
@@ -52,17 +52,17 @@ func initConfigurationFile() {
 
 }
 
-const logFileDir = "logs/fabapp.log"
+const logFileDir = "fabackend.log"
 
 func initLogger() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 
-	logFile, err := os.OpenFile(logFileDir, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.FileMode(0666))
+	logFile, err := os.OpenFile(logFileDir, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.FileMode(0644))
 
 	var logWriter io.Writer
 
 	if err != nil {
-		logrus.Warningf("Unable to open log file at %v. Using stdout for logging", logFileDir)
+		logrus.Warningf("Unable to open log file at %v. Using stdout for logging. Err: %v", logFileDir, err)
 		logWriter = os.Stdout
 	} else {
 		logWriter = io.MultiWriter(os.Stdout, logFile)

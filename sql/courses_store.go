@@ -1,22 +1,22 @@
-package repos
+package sql
 
 import (
-	"database/sql"
-
 	"github.com/lib/pq"
-
 	"github.com/sirupsen/logrus"
 	"github.com/soarex16/fabackend/domain"
 )
 
-// GetAllCourses - returns collection of all courses
-func GetAllCourses(db *sql.DB) (*[]domain.Course, error) {
+type CoursesStore struct {
+	Store
+}
+
+func (s *CoursesStore) GetAll() (*[]domain.Course, error) {
 	const query = `
 		SELECT * 
 		FROM courses;
 	`
 
-	rows, err := db.Query(query)
+	rows, err := s.DB.Query(query)
 
 	if err != nil {
 		logrus.

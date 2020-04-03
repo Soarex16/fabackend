@@ -1,0 +1,350 @@
+openapi: 3.0.0
+info:
+  title: Fitness App
+  description: |
+    This is a CRUD API for fitness app.
+  contact:
+    name: Shumaf Lovpache
+    url: https://github.com/Soarex16
+    email: soarex16@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.2.0
+servers:
+- url: https://virtserver.swaggerhub.com/Soarex16/fitness_app/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: achievement
+  description: User achievements
+- name: course
+  description: Access to courses data
+- name: user
+  description: Operations about user
+- name: token
+  description: JWT tokens operations
+paths:
+  /courses:
+    get:
+      tags:
+      - course
+      summary: Get all courses
+      description: Returns array of cources
+      operationId: getAllCources
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+      security:
+      - user_auth: []
+  /users:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+  /users/login:
+    post:
+      tags:
+      - user
+      - token
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Invalid username/password supplied
+  /users/login/refresh:
+    post:
+      tags:
+      - token
+      summary: Refresh tokens
+      operationId: refreshTokens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_1'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "403":
+          description: Invalid refresh token
+  /users/{username}:
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be fetched. Use user1 for testing.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: Invalid username supplied
+        "401":
+          description: Invalid token
+        "403":
+          description: User doesn't have permisiions to access
+        "404":
+          description: User not found
+      security:
+      - user_auth: []
+    put:
+      tags:
+      - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: name that need to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "400":
+          description: Invalid user supplied
+        "401":
+          description: Invalid token
+        "403":
+          description: User doesn't have permisiions to access
+        "404":
+          description: User not found
+      security:
+      - user_auth: []
+    delete:
+      tags:
+      - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: User accound was successfully deleted
+        "400":
+          description: Invalid username supplied
+        "401":
+          description: Invalid token
+        "403":
+          description: User doesn't have permisiions to access
+        "404":
+          description: User not found
+      security:
+      - user_auth: []
+  /users/{username}/achievements:
+    get:
+      tags:
+      - achievement
+      summary: Get all achievements for user
+      description: Returns array of achievements
+      operationId: getUserAchievements
+      parameters:
+      - name: username
+        in: path
+        description: username
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Achievement'
+        "404":
+          description: User not found
+      security:
+      - user_auth: []
+    post:
+      tags:
+      - achievement
+      summary: Add achievement for user by his ID
+      description: Returns an achievement
+      operationId: addUserAchievement
+      parameters:
+      - name: username
+        in: path
+        description: username
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        $ref: '#/components/requestBodies/Achievement'
+      responses:
+        "200":
+          description: Achievement was added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        "400":
+          description: Invalid entity format
+      security:
+      - user_auth: []
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        label:
+          type: string
+        description:
+          type: string
+        exercises:
+          type: array
+          items:
+            type: string
+            description: Список упражнений (сами упражнения захардкожены в клиенте)
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          description: Пользователь, который получил это достижение
+          format: uuid
+        date:
+          type: integer
+          description: Дата в формате unix timestamp
+          format: int64
+        price:
+          type: integer
+          description: Вес достижения (нужно для календаря)
+          format: int64
+        iconName:
+          type: string
+          description: Имя иконки для отображения в карточке
+        iconColor:
+          type: string
+        description:
+          type: string
+        title:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    body:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: The user name for login
+        password:
+          type: string
+          description: The password for login in clear text
+          format: password
+    inline_response_200:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+    body_1:
+      type: object
+      properties:
+        refreshToken:
+          required:
+          - refreshToken
+          type: string
+          description: Refresh token
+  requestBodies:
+    Achievement:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Achievement'
+      required: true
+  securitySchemes:
+    user_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

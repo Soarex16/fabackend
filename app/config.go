@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config - stores application configuration
+// Config - global application configuration
 type Config struct {
 	Port               int
 	DbConnectionString string

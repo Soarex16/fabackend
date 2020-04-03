@@ -21,4 +21,4 @@
 config.json
 
 # Logs
-logs/
+fabackend.log

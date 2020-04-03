@@ -1,17 +1,18 @@
-package repos
+package sql
 
 import (
 	"database/sql"
-
-	"github.com/soarex16/fabackend/domain"
-
 	"github.com/sirupsen/logrus"
+	"github.com/soarex16/fabackend/domain"
 )
 
-// GetUserAchievements - fidns user with specified username and returns achievements for it
-func GetUserAchievements(db *sql.DB, username string) (*[]domain.Achievement, error) {
+type AchievementsStore struct {
+	Store
+}
+
+func (s *AchievementsStore) GetByUsername(username string) (*[]domain.Achievement, error) {
 	const query = `
-		SELECT cast(extract(epoch from achievements.date) as integer), achievements.description, achievements.iconcolor, achievements.id, achievements.price, achievements.title
+		SELECT achievements.date, achievements.description, achievements.iconcolor, achievements.id, achievements.price, achievements.title
 		FROM achievements
 		WHERE achievements.userid = (
 			SELECT id
@@ -20,7 +21,7 @@ func GetUserAchievements(db *sql.DB, username string) (*[]domain.Achievement, er
 		);
 	`
 
-	stmt, _ := db.Prepare(query)
+	stmt, _ := s.DB.Prepare(query)
 	rows, err := stmt.Query(username)
 
 	if err != nil {
@@ -54,8 +55,7 @@ func GetUserAchievements(db *sql.DB, username string) (*[]domain.Achievement, er
 	return &resultSet, nil
 }
 
-// AddUserAchievement - adds achievement to user
-func AddUserAchievement(db *sql.DB, username string, ach *domain.Achievement) (sql.Result, error) {
+func (s *AchievementsStore) Add(username string, ach *domain.Achievement) (sql.Result, error) {
 	const query = `
 		INSERT INTO achievements(date, description, iconcolor, price, title, userid) VALUES
 			($1, $2, $3, $4, $5, SELECT id
@@ -63,7 +63,7 @@ func AddUserAchievement(db *sql.DB, username string, ach *domain.Achievement) (s
 				WHERE username = $6);
 	`
 
-	stmt, _ := db.Prepare(query)
+	stmt, _ := s.DB.Prepare(query)
 	res, err := stmt.Exec(ach.Date, ach.Description, ach.IconColor, ach.Price, ach.Title, username)
 
 	if err != nil {

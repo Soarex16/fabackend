@@ -2,10 +2,9 @@ package app
 
 import (
 	"database/sql"
+	"github.com/julienschmidt/httprouter"
 
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	ctx "github.com/soarex16/fabackend/context"
 	"github.com/soarex16/fabackend/routes"
 
 	// register postgres driver
@@ -14,9 +13,9 @@ import (
 
 // App - global application data
 type App struct {
-	Config  *Config
-	Context *ctx.Context
-	Router  *mux.Router
+	Config *Config
+	Store  *Store
+	Router *httprouter.Router
 }
 
 // New - initializes configuration, routes, db
@@ -39,9 +38,9 @@ func New() (app *App, err error) {
 		return nil, err
 	}
 
-	app.Context = &ctx.Context{DB: db}
+	app.Store = NewStore(db)
 
-	appRoutes := routes.GetAll(app.Context)
+	appRoutes := InitHandlers(app)
 	app.Router = routes.NewRouter(appRoutes)
 
 	return app, err
