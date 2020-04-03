@@ -30,14 +30,14 @@ func NewRouter(routes *Routes) *httprouter.Router {
 		var handler http.Handler
 		handler = route.HandlerFunc
 
-		handler = middlewares.RequestID(handler)
-		handler = middlewares.Logging(handler)
 		handler = middlewares.Authorization(handler, route.Private)
+		handler = middlewares.Logging(handler)
+		handler = middlewares.RequestID(handler)
 
 		router.Handler(
 			route.Method,
 			route.Pattern,
-			route.HandlerFunc,
+			handler,
 		)
 	}
 

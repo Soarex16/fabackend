@@ -22,16 +22,12 @@ type RequestIDContext struct {
 }
 
 func RequestID(next http.Handler) http.Handler {
-	logrus.Error("RID")
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reqID, parseErr := uuid.Parse(r.Header.Get(RequestIDHeader))
 
 		if parseErr != nil {
 			reqID = uuid.New()
 		}
-
-		logrus.Error("TEST!!!!")
 
 		ctx := context.WithValue(
 			r.Context(),
@@ -47,8 +43,6 @@ func RequestID(next http.Handler) http.Handler {
 
 // Logging - middleware for logging requests
 func Logging(next http.Handler) http.Handler {
-	logrus.Error("LOGGING")
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -78,7 +72,6 @@ type AuthorizationContext struct {
 
 // Authorization - wraps handler with authorization context and checks private routes
 func Authorization(next http.Handler, private bool) http.Handler {
-	logrus.Error("AUTH")
 	//TODO
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
