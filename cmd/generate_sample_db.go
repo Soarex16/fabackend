@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -16,6 +17,15 @@ var generateSampleDbCmd = &cobra.Command{
 	Short: "Inserts sample data into database",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		connStr := viper.GetString("dbConnectionString")
+
+		if connStr == "" {
+			connStr = viper.GetString("DATABASE_URL")
+
+			if connStr == "" {
+				return fmt.Errorf("'dbConnectionString' must be specified in configuration file")
+			}
+		}
+
 		db, err := sql.Open("postgres", connStr)
 
 		if err != nil {

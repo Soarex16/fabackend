@@ -26,7 +26,12 @@ func InitConfiguration() (*Config, error) {
 	}
 
 	if len(cfg.DbConnectionString) == 0 {
-		return nil, fmt.Errorf("'dbConnectionString' must be specified in configuration file")
+		//try to get connection string from heroku env vars
+		cfg.DbConnectionString = viper.GetString("DATABASE_URL")
+
+		if len(cfg.DbConnectionString) == 0 {
+			return nil, fmt.Errorf("'dbConnectionString' must be specified in configuration file")
+		}
 	}
 
 	if len(cfg.JwtSecret) == 0 {
