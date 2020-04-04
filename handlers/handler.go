@@ -50,20 +50,21 @@ type ValidationErrors map[string]string
 
 // ModelValidationError - writes validation errors as json
 func (h *Handler) ModelValidationError(w http.ResponseWriter, r *http.Request, errs *ValidationErrors) {
+	h.UnprocessableEntity(w, r)
 	err := h.WriteJsonBody(w, r, errs)
 
 	// error already has been logged in WriteJsonBody
 	if err != nil {
 		return
 	}
-
-	h.UnprocessableEntity(w, r)
 }
 
 // Ok - writes resp as JSON into body and send success
 func (h *Handler) WriteJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) error {
 	bytes, err := json.Marshal(obj)
 
+	// NOTE: can cause "superfluous response.WriteHeader call" because we must
+	// write response code and all headers before writing body
 	if err != nil {
 		h.InternalServerError(w, r, err, "Error while serializing response")
 		return err
@@ -83,6 +84,7 @@ func (h *Handler) Ok(w http.ResponseWriter, r *http.Request) {
 
 // Created - 201 (Created)
 func (h *Handler) Created(w http.ResponseWriter, r *http.Request, resp interface{}) {
+	w.WriteHeader(http.StatusCreated)
 	err := h.WriteJsonBody(w, r, resp)
 
 	if err != nil {
@@ -91,8 +93,6 @@ func (h *Handler) Created(w http.ResponseWriter, r *http.Request, resp interface
 
 	reqId := h.RequestID(r)
 	logSuccessResponse(reqId, http.StatusCreated, "")
-
-	w.WriteHeader(http.StatusCreated)
 }
 
 // BadRequest - 400 (Bad Request)

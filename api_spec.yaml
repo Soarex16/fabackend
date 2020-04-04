@@ -1,38 +1,39 @@
 openapi: 3.0.0
 info:
-  title: Fitness App
   description: |
     This is a CRUD API for fitness app.
+  version: "1.3.0"
+  title: Fitness App
   contact:
+    email: soarex16@gmail.com
     name: Shumaf Lovpache
     url: https://github.com/Soarex16
-    email: soarex16@gmail.com
   license:
     name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.3.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-- url: https://virtserver.swaggerhub.com/Soarex16/fitness_app/1.0.0
-  description: SwaggerHub API Auto Mocking
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Soarex16/fitness_app/1.0.0
 tags:
-- name: achievement
-  description: User achievements
-- name: course
-  description: Access to courses data
-- name: user
-  description: Operations about user
-- name: token
-  description: JWT tokens operations
+  - name: achievement
+    description: User achievements
+  - name: course
+    description: Access to courses data
+  - name: user
+    description: Operations about user
+  - name: token
+    description: JWT tokens operations
 paths:
   /courses:
     get:
       tags:
-      - course
+        - course
       summary: Get all courses
       description: Returns array of cources
       operationId: getAllCources
       responses:
-        "200":
+        '200':
           description: successful operation
           content:
             application/json:
@@ -40,188 +41,254 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Course'
-        "500":
+        '500':
           description: Internal error (ex. DB connection closed)
       security:
-      - user_auth: []
-  /users:
+        - user_auth: []
+
+  /auth/login:
     post:
       tags:
-      - user
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
-      requestBody:
-        description: Created user object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-        required: true
-      responses:
-        "201":
-          description: User successfully created
-        "422":
-          description: Model validation errors
-        "500":
-          description: Db error
-  /users/login:
-    post:
-      tags:
-      - user
-      - token
+        - user
+        - token
       summary: Logs user into the system
       operationId: loginUser
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body'
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The user name for login
+                password:
+                  type: string
+                  format: password
+                  description: The password for login in clear text
+              required:
+                - username
+                - password
       responses:
-        "200":
+        '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
-        "400":
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  expiresIn:
+                    type: integer
+                    format: int64
+        '400':
           description: Invalid username/password supplied
-  /users/login/refresh:
+
+  /auth/refresh:
     post:
       tags:
-      - token
+        - token
       summary: Refresh tokens
       operationId: refreshTokens
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_1'
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token
+                  required:
+                    - refreshToken
       responses:
-        "200":
+        '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
-        "403":
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  expiresIn:
+                    type: integer
+                    format: int64
+        '403':
           description: Invalid refresh token
-  /users/{username}:
+
+  /users:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      responses:
+        '201':
+          description: User successfully created
+        '422':
+          description: Model validation errors
+        '500':
+          description: Db error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Created user object
+        required: true
+
+  '/users/{username}':
     get:
       tags:
-      - user
+        - user
       summary: Get user by user name
       operationId: getUserByName
       parameters:
-      - name: username
-        in: path
-        description: The name that needs to be fetched. Use user1 for testing.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
+        - name: username
+          in: path
+          description: The name that needs to be fetched. Use user1 for testing.
+          required: true
+          schema:
+            type: string
       responses:
-        "200":
+        '200':
           description: successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        "400":
+        '400':
           description: Invalid username supplied
-        "401":
+        '401':
           description: Invalid token
-        "403":
+        '403':
           description: User doesn't have permisiions to access
-        "404":
+        '404':
           description: User not found
       security:
-      - user_auth: []
+        - user_auth: []
+
     put:
       tags:
-      - user
+        - user
       summary: Updated user
       description: This can only be done by the logged in user.
       operationId: updateUser
       parameters:
-      - name: username
-        in: path
-        description: name that need to be updated
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
+        - name: username
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User successfully updated
+        '401':
+          description: Invalid token
+        '403':
+          description: User doesn't have permisiions to access
+        '404':
+          description: User not found
+        '422':
+          description: Invalid user supplied
+        '500':
+          description: DB error
       requestBody:
-        description: Updated user object
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+        description: Updated user object
         required: true
-      responses:
-        "200":
-          description: User successfully updated
-        "401":
-          description: Invalid token
-        "403":
-          description: User doesn't have permisiions to access
-        "404":
-          description: User not found
-        "422":
-          description: Invalid user supplied
-        "500":
-          description: DB error
       security:
-      - user_auth: []
+        - user_auth: []
+
     delete:
       tags:
-      - user
+        - user
       summary: Delete user
       description: This can only be done by the logged in user.
       operationId: deleteUser
       parameters:
-      - name: username
-        in: path
-        description: The name that needs to be deleted
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
       responses:
-        "200":
+        '200':
           description: User accound was successfully deleted
-        "400":
+        '400':
           description: Invalid username supplied
-        "401":
+        '401':
           description: Invalid token
-        "403":
+        '403':
           description: User doesn't have permisiions to access
-        "404":
+        '404':
           description: User not found
       security:
-      - user_auth: []
-  /users/{username}/achievements:
+        - user_auth: []
+
+  '/users/{username}/achievements':
+    post:
+      tags:
+        - achievement
+      summary: Add achievement for user by his ID
+      description: Returns an achievement
+      operationId: addUserAchievement
+      parameters:
+        - name: username
+          in: path
+          description: username
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Achievement was added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        '400':
+          description: Invalid entity format
+        '404':
+          description: User not found
+        '422':
+          description: Model contain errors
+        '500':
+          description: Internal error
+      security:
+        - user_auth: []
+      requestBody:
+        $ref: '#/components/requestBodies/Achievement'
+
     get:
       tags:
-      - achievement
+        - achievement
       summary: Get all achievements for user
       description: Returns array of achievements
       operationId: getUserAchievements
       parameters:
-      - name: username
-        in: path
-        description: username
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
+        - name: username
+          in: path
+          description: username
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -229,45 +296,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Achievement'
-        "404":
+        '404':
           description: User not found
       security:
-      - user_auth: []
-    post:
-      tags:
-      - achievement
-      summary: Add achievement for user by his ID
-      description: Returns an achievement
-      operationId: addUserAchievement
-      parameters:
-      - name: username
-        in: path
-        description: username
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-      requestBody:
-        $ref: '#/components/requestBodies/Achievement'
-      responses:
-        "201":
-          description: Achievement was added successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Achievement'
-        "400":
-          description: Invalid entity format
-        "404":
-          description: User not found
-        "422":
-          description: Model contain errors
-        "500":
-          description: Internal error
-      security:
-      - user_auth: []
+        - user_auth: []
 components:
   schemas:
     Course:
@@ -289,20 +321,20 @@ components:
           type: string
           format: uuid
         userId:
-          type: string
           description: Пользователь, который получил это достижение
+          type: string
           format: uuid
         date:
-          type: integer
           description: Дата в формате unix timestamp
+          type: integer
           format: int64
         price:
-          type: integer
           description: Вес достижения (нужно для календаря)
+          type: integer
           format: int64
         iconName:
-          type: string
           description: Имя иконки для отображения в карточке
+          type: string
         iconColor:
           type: string
         description:
@@ -321,37 +353,6 @@ components:
           type: string
         password:
           type: string
-    body:
-      required:
-      - password
-      - username
-      type: object
-      properties:
-        username:
-          type: string
-          description: The user name for login
-        password:
-          type: string
-          description: The password for login in clear text
-          format: password
-    inline_response_200:
-      type: object
-      properties:
-        accessToken:
-          type: string
-        refreshToken:
-          type: string
-        expiresIn:
-          type: integer
-          format: int64
-    body_1:
-      type: object
-      properties:
-        refreshToken:
-          required:
-          - refreshToken
-          type: string
-          description: Refresh token
   requestBodies:
     Achievement:
       content:
