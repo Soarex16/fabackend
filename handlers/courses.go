@@ -7,7 +7,7 @@ import (
 
 type CoursesHandler struct {
 	Handler
-	Courses *sql.CoursesStore
+	Courses sql.CoursesStore
 }
 
 // GetAllCources - return handler for route

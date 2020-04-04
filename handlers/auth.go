@@ -8,7 +8,7 @@ import (
 type AuthHandler struct {
 	Handler
 	JwtSecret []byte
-	Users     *sql.UsersStore
+	Users     sql.UsersStore
 	//Sessions *SessionsStore
 }
 

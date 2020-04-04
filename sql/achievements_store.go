@@ -1,18 +1,21 @@
 package sql
 
 import (
-	"database/sql"
-	"fmt"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/soarex16/fabackend/domain"
 )
 
-type AchievementsStore struct {
+type AchievementsStore interface {
+	GetByUsername(username string) (*[]domain.Achievement, error)
+	Add(userId uuid.UUID, ach *domain.Achievement) (bool, error)
+	AddByUsername(username string, ach *domain.Achievement) (bool, error)
+}
+
+type PqAchievementsStore struct {
 	Store
 }
 
-func (s *AchievementsStore) GetByUsername(username string) (*[]domain.Achievement, error) {
+func (s *PqAchievementsStore) GetByUsername(username string) (*[]domain.Achievement, error) {
 	const query = `
 		SELECT achievements.date, achievements.description, achievements.iconcolor, achievements.id, achievements.price, achievements.title
 		FROM achievements
@@ -51,7 +54,7 @@ func (s *AchievementsStore) GetByUsername(username string) (*[]domain.Achievemen
 	return &resultSet, nil
 }
 
-func (s *AchievementsStore) Add(userId uuid.UUID, ach *domain.Achievement) (sql.Result, error) {
+func (s *PqAchievementsStore) Add(userId uuid.UUID, ach *domain.Achievement) (bool, error) {
 	const query = `
 		INSERT INTO achievements(date, description, iconcolor, price, title, userid) VALUES
 			($1, $2, $3, $4, $5);
@@ -62,13 +65,20 @@ func (s *AchievementsStore) Add(userId uuid.UUID, ach *domain.Achievement) (sql.
 
 	if err != nil {
 		logDBErr(err, query, "Error, while inserting data into DB")
-		return nil, err
+		return false, err
 	}
 
-	return res, nil
+	affectedRows, err := res.RowsAffected()
+
+	if err != nil {
+		logDBErr(err, query, "")
+		return false, err
+	}
+
+	return affectedRows == 1, nil
 }
 
-func (s *AchievementsStore) AddByUsername(username string, ach *domain.Achievement) (sql.Result, error) {
+func (s *PqAchievementsStore) AddByUsername(username string, ach *domain.Achievement) (bool, error) {
 	const query = `
 		INSERT INTO achievements(date, description, iconcolor, price, title, userid) VALUES
 			($1, $2, $3, $4, $5, SELECT id
@@ -79,21 +89,12 @@ func (s *AchievementsStore) AddByUsername(username string, ach *domain.Achieveme
 	stmt, _ := s.DB.Prepare(query)
 	res, err := stmt.Exec(ach.Date, ach.Description, ach.IconColor, ach.Price, ach.Title, username)
 
+	affectedRows, err := res.RowsAffected()
+
 	if err != nil {
-
-		return nil, err
+		logDBErr(err, query, "")
+		return false, err
 	}
 
-	return res, nil
-}
-
-func logDBErr(err error, query string, errMsg string) {
-	if errMsg != "" {
-		errMsg = fmt.Sprintf("Error, while executing query: %v", err)
-	}
-
-	logrus.
-		WithField("query", query).
-		WithField("err", err).
-		Error(errMsg)
+	return affectedRows == 1, nil
 }

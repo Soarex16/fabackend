@@ -10,7 +10,7 @@ import (
 
 type UsersHandler struct {
 	Handler
-	Users *sql.UsersStore
+	Users sql.UsersStore
 }
 
 var loginRegex, _ = regexp.Compile(`^([a-zA-Z0-9_]){5,50}$`)

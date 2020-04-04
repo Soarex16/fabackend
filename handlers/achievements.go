@@ -10,8 +10,8 @@ import (
 
 type AchievementsHandler struct {
 	Handler
-	Achievements *sql.AchievementsStore
-	Users        *sql.UsersStore
+	Achievements sql.AchievementsStore
+	Users        sql.UsersStore
 }
 
 // AddUserAchievement - return handler for route
