@@ -75,14 +75,8 @@ func (h *Handler) WriteJsonBody(w http.ResponseWriter, r *http.Request, obj inte
 	return nil
 }
 
-// Ok - writes resp as JSON into body and send success
-func (h *Handler) Ok(w http.ResponseWriter, r *http.Request, resp interface{}) {
-	err := h.WriteJsonBody(w, r, resp)
-
-	if err != nil {
-		return
-	}
-
+// Ok - 200 (OK)
+func (h *Handler) Ok(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
 	logSuccessResponse(reqId, http.StatusOK, "")
 }
@@ -136,7 +130,7 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 // UnprocessableEntity - 422 (Unprocessable Entity)
 func (h *Handler) UnprocessableEntity(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Invalid request: %v", r.RequestURI))
+	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Invalid request at route^ %v", r.RequestURI))
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 }

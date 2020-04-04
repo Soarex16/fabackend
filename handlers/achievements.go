@@ -73,7 +73,7 @@ func (h *AchievementsHandler) AddUserAchievement(w http.ResponseWriter, r *http.
 		h.InternalServerError(w, r, err, "Error while performing db operation")
 	}
 
-	h.Created(w, r, "Achievement was added successfully")
+	h.Created(w, r, "Achievement was successfully added")
 }
 
 // GetUserAchievements - return handler for route
