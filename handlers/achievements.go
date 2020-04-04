@@ -26,7 +26,7 @@ func (h *AchievementsHandler) AddUserAchievement(w http.ResponseWriter, r *http.
 
 	// validate achievement
 	ach := &domain.Achievement{}
-	err := json.NewDecoder(r.Body).Decode(&ach)
+	err := json.NewDecoder(r.Body).Decode(ach)
 
 	if err != nil {
 		h.UnprocessableEntity(w, r)

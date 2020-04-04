@@ -2,6 +2,7 @@ package app
 
 import (
 	"database/sql"
+	"github.com/soarex16/fabackend/auth"
 	stores "github.com/soarex16/fabackend/sql"
 )
 
@@ -13,6 +14,8 @@ type Store struct {
 	Achievements stores.AchievementsStore
 	Courses      stores.CoursesStore
 	Users        stores.UsersStore
+
+	Sessions *auth.SessionStore
 }
 
 // NewStore - initializes new instances of stores
@@ -24,5 +27,7 @@ func NewStore(db *sql.DB) *Store {
 		Achievements: &stores.PqAchievementsStore{Store: s},
 		Courses:      &stores.PqCoursesStore{Store: s},
 		Users:        &stores.PqUsersStore{Store: s},
+
+		Sessions: auth.NewSessionStore(),
 	}
 }

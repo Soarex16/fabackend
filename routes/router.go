@@ -9,11 +9,11 @@ import (
 
 // Route - type for defining all route information
 type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	Private     bool
-	HandlerFunc http.HandlerFunc
+	Name    string
+	Method  string
+	Pattern string
+	Private bool
+	Handler http.Handler
 }
 
 // Routes - collection of routes
@@ -27,10 +27,8 @@ func NewRouter(routes *Routes) *httprouter.Router {
 	router := httprouter.New()
 
 	for _, route := range *routes {
-		var handler http.Handler
-		handler = route.HandlerFunc
+		handler := route.Handler
 
-		handler = middlewares.Authorization(handler, route.Private)
 		handler = middlewares.Logging(handler)
 		handler = middlewares.RequestID(handler)
 

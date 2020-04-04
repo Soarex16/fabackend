@@ -15,14 +15,13 @@ type UsersHandler struct {
 
 var loginRegex, _ = regexp.Compile(`^([a-zA-Z0-9_]){5,50}$`)
 var emailRegex, _ = regexp.Compile(`^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$`)
-
-//TODO: надо проверять, что пользователь работает только со своими данными (админки пока нет, так что этого хватит)
+var pwdRegex, _ = regexp.Compile(`[A-Fa-f0-9]{64}`)
 
 // CreateUser - return handler for route
 // POST /users
 func (h *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	usr := &domain.User{}
-	err := json.NewDecoder(r.Body).Decode(&usr)
+	err := json.NewDecoder(r.Body).Decode(usr)
 
 	if err != nil {
 		h.UnprocessableEntity(w, r)
@@ -74,7 +73,7 @@ func (h *UsersHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	usr := &domain.User{}
-	err := json.NewDecoder(r.Body).Decode(&usr)
+	err := json.NewDecoder(r.Body).Decode(usr)
 
 	if err != nil {
 		h.UnprocessableEntity(w, r)
@@ -138,7 +137,6 @@ func getUserValidationErrors(usr *domain.User) ValidationErrors {
 		modelErrs["email"] = "Email must be valid"
 	}
 
-	pwdRegex, _ := regexp.Compile(`[A-Fa-f0-9]{64}`)
 	if !pwdRegex.MatchString(usr.Password) {
 		modelErrs["password"] = "Password must be valid SHA-256"
 	}

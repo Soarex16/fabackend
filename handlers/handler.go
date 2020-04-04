@@ -98,7 +98,7 @@ func (h *Handler) Created(w http.ResponseWriter, r *http.Request, resp interface
 // BadRequest - 400 (Bad Request)
 func (h *Handler) BadRequest(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusBadRequest, fmt.Sprintf("Bad request at route: %v", r.RequestURI))
+	logSuccessResponse(reqId, http.StatusBadRequest, fmt.Sprintf("Bad request at route: %v", r.URL.Path))
 
 	w.WriteHeader(http.StatusBadRequest)
 }
@@ -106,7 +106,7 @@ func (h *Handler) BadRequest(w http.ResponseWriter, r *http.Request) {
 // Unauthorized - 401 (Unauthorized)
 func (h *Handler) Unauthorized(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusUnauthorized, fmt.Sprintf("Unauthorized user at route: %v", r.RequestURI))
+	logSuccessResponse(reqId, http.StatusUnauthorized, fmt.Sprintf("Unauthorized user at route: %v", r.URL.Path))
 
 	w.WriteHeader(http.StatusUnauthorized)
 }
@@ -114,7 +114,7 @@ func (h *Handler) Unauthorized(w http.ResponseWriter, r *http.Request) {
 // Forbidden - 403 (Forbidden)
 func (h *Handler) Forbidden(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusForbidden, fmt.Sprintf("Resource forbidden for user: %v", r.RequestURI))
+	logSuccessResponse(reqId, http.StatusForbidden, fmt.Sprintf("Resource forbidden for user: %v", r.URL.Path))
 
 	w.WriteHeader(http.StatusForbidden)
 }
@@ -122,7 +122,7 @@ func (h *Handler) Forbidden(w http.ResponseWriter, r *http.Request) {
 // NotFound - 404 (Not Found)
 func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusNotFound, fmt.Sprintf("Cannot find resource at route: %v", r.RequestURI))
+	logSuccessResponse(reqId, http.StatusNotFound, fmt.Sprintf("Cannot find resource at route: %v", r.URL.Path))
 
 	w.WriteHeader(http.StatusNotFound)
 }
@@ -130,7 +130,7 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 // UnprocessableEntity - 422 (Unprocessable Entity)
 func (h *Handler) UnprocessableEntity(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Invalid request at route^ %v", r.RequestURI))
+	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Invalid request at route^ %v", r.URL.Path))
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 }
@@ -145,6 +145,14 @@ func (h *Handler) InternalServerError(w http.ResponseWriter, r *http.Request, er
 	logErrorResponse(reqId, http.StatusInternalServerError, err, "")
 
 	w.WriteHeader(http.StatusInternalServerError)
+}
+
+// NotImplemented - 501 (Not Implemented)
+func (h *Handler) NotImplemented(w http.ResponseWriter, r *http.Request) {
+	reqId := h.RequestID(r)
+	logSuccessResponse(reqId, http.StatusNotImplemented, fmt.Sprintf("Not implemented at route: %v", r.URL.Path))
+
+	w.WriteHeader(http.StatusNotImplemented)
 }
 
 func logSuccessResponse(reqId uuid.UUID, statusCode int, desc string) {

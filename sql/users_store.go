@@ -6,6 +6,7 @@ import (
 
 type UsersStore interface {
 	FindByName(username string) (*domain.User, error)
+	FindByEmail(email string) (*domain.User, error)
 	Add(u *domain.User) (bool, error)
 	Update(u *domain.User) (bool, error)
 	Delete(username string) (bool, error)
@@ -51,6 +52,25 @@ func (s *PqUsersStore) FindByName(username string) (*domain.User, error) {
 
 	u := domain.User{}
 	err := s.DB.QueryRow(query, username).Scan(&u.ID, &u.Username, &u.Email)
+
+	if err != nil {
+		logDBErr(err, query, "Error, while querying user from DB")
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+// FindByName - finds user with specified email
+func (s *PqUsersStore) FindByEmail(email string) (*domain.User, error) {
+	const query = `
+		SELECT id, username, email, password
+		FROM users
+		WHERE users.email = $1;
+	`
+
+	u := domain.User{}
+	err := s.DB.QueryRow(query, email).Scan(&u.ID, &u.Username, &u.Email, &u.Password)
 
 	if err != nil {
 		logDBErr(err, query, "Error, while querying user from DB")

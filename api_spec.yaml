@@ -49,7 +49,6 @@ paths:
   /auth/login:
     post:
       tags:
-        - user
         - token
       summary: Logs user into the system
       operationId: loginUser
@@ -59,15 +58,15 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                email:
                   type: string
-                  description: The user name for login
+                  description: The user email for login
                 password:
                   type: string
                   format: password
                   description: The password for login in clear text
               required:
-                - username
+                - email
                 - password
       responses:
         '200':
@@ -81,11 +80,16 @@ paths:
                     type: string
                   refreshToken:
                     type: string
-                  expiresIn:
+                  accessTokenExp:
                     type: integer
                     format: int64
-        '400':
+                  refreshTokenExp:
+                    type: integer
+                    format: int64
+        '401':
           description: Invalid username/password supplied
+        '500':
+          description: DB error
 
   /auth/refresh:
     post:
@@ -116,11 +120,18 @@ paths:
                     type: string
                   refreshToken:
                     type: string
-                  expiresIn:
+                  accessTokenExp:
+                    type: integer
+                    format: int64
+                  refreshTokenExp:
                     type: integer
                     format: int64
         '403':
           description: Invalid refresh token
+        '422':
+          description: Model validation
+        '500':
+          description: Token signing error
 
   /users:
     post:

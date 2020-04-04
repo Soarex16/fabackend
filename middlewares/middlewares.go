@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/soarex16/fabackend/auth"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -52,10 +54,10 @@ func Logging(next http.Handler) http.Handler {
 
 		logrus.WithFields(logrus.Fields{
 			"method":         r.Method,
-			"uri":            r.RequestURI,
+			"uri":            r.URL.Path,
 			"requestId":      reqID,
 			"processingTime": time.Since(start),
-		}).Infof("Processed %v", r.RequestURI)
+		}).Infof("Processed %v", r.URL.Path)
 	})
 }
 
@@ -64,16 +66,68 @@ const AuthorizationContextKey RequestContextKey = "auth"
 
 // AuthorizationContext - information about user
 type AuthorizationContext struct {
-	AccessToken  string
-	RefreshToken string
-	ExpiresIn    int64
-	UserID       uuid.UUID
+	Session *auth.Session
 }
 
 // Authorization - wraps handler with authorization context and checks private routes
-func Authorization(next http.Handler, private bool) http.Handler {
-	//TODO
+func Authorization(next http.Handler, store *auth.SessionStore) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r)
+		token, err := auth.GetBearerToken(r)
+
+		// fast check
+		if err != nil || token == "" {
+			logrus.
+				WithField("path", r.URL.Path).
+				Warn("Attempt to access private route without authorization")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		session, ok := store.GetByAccessToken(token)
+		if !ok {
+			logrus.
+				WithField("path", r.URL.Path).
+				Warn("Attempt to access private route with invalid token")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		if time.Now().Unix() > session.AccessTokenExp {
+			// remove token from storage
+			store.RemoveByAccessToken(token)
+
+			logrus.
+				WithField("path", r.URL.Path).
+				Warn("Attempt to access private route with expired token")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		// проверяем, что юзеру можно на этот раут
+		canPass := false
+		for route := range session.AccessedRoutes {
+			if strings.Contains(route, r.URL.Path) {
+				canPass = true
+			}
+		}
+
+		if !canPass {
+			logrus.
+				WithField("path", r.URL.Path).
+				Warn("none of the paths allowed to the user matches the requested path")
+
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(
+			r.Context(),
+			AuthorizationContextKey,
+			AuthorizationContext{
+				Session: session,
+			},
+		)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
