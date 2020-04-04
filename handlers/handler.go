@@ -130,7 +130,7 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 // UnprocessableEntity - 422 (Unprocessable Entity)
 func (h *Handler) UnprocessableEntity(w http.ResponseWriter, r *http.Request) {
 	reqId := h.RequestID(r)
-	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Invalid request at route^ %v", r.URL.Path))
+	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Invalid request at route: %v", r.URL.Path))
 
 	w.WriteHeader(http.StatusUnprocessableEntity)
 }
