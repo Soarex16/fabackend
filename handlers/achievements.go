@@ -35,7 +35,7 @@ func (h *AchievementsHandler) AddUserAchievement(w http.ResponseWriter, r *http.
 
 	modelErrs := make(ValidationErrors)
 
-	if time.Now().Sub(ach.Date).Milliseconds() == 0 || time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Sub(ach.Date).Milliseconds() == 0 {
+	if time.Now().Sub(ach.Date) == 0 || time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Sub(ach.Date) == 0 {
 		modelErrs["date"] = "Date can't be more than current and less than 2000"
 	}
 

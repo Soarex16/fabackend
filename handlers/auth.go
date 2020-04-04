@@ -15,8 +15,7 @@ type AuthHandler struct {
 // Login - performs user authentication
 // POST /auth/login
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	h.Ok(w, r)
 }
 
 // RefreshTokens - session refreshing when token expires
