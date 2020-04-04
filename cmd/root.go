@@ -34,8 +34,6 @@ func init() {
 }
 
 func initConfigurationFile() {
-	viper.AutomaticEnv()
-
 	if configFile != "" {
 		viper.SetConfigFile(configFile)
 	} else {
