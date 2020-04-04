@@ -42,7 +42,7 @@ func InitConfiguration() (*Config, error) {
 func readEnvOverrides(cfg *Config) {
 	viper.AutomaticEnv()
 
-	if p := viper.GetInt("LISTEN_PORT"); p != 0 {
+	if p := viper.GetInt("PORT"); p != 0 {
 		cfg.Port = p
 	}
 
