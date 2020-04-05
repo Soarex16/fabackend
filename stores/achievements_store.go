@@ -1,4 +1,4 @@
-package sql
+package stores
 
 import (
 	"github.com/google/uuid"

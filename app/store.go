@@ -3,7 +3,7 @@ package app
 import (
 	"database/sql"
 	"github.com/soarex16/fabackend/auth"
-	stores "github.com/soarex16/fabackend/sql"
+	"github.com/soarex16/fabackend/stores"
 )
 
 // Store - represents application db

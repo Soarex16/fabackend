@@ -3,15 +3,15 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/soarex16/fabackend/domain"
-	"github.com/soarex16/fabackend/sql"
+	"github.com/soarex16/fabackend/stores"
 	"net/http"
 	"time"
 )
 
 type AchievementsHandler struct {
 	Handler
-	Achievements sql.AchievementsStore
-	Users        sql.UsersStore
+	Achievements stores.AchievementsStore
+	Users        stores.UsersStore
 }
 
 // AddUserAchievement - return handler for route

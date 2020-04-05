@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"github.com/soarex16/fabackend/sql"
+	"github.com/soarex16/fabackend/stores"
 	"net/http"
 )
 
 type CoursesHandler struct {
 	Handler
-	Courses sql.CoursesStore
+	Courses stores.CoursesStore
 }
 
 // GetAllCources - return handler for route

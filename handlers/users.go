@@ -1,16 +1,17 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"github.com/soarex16/fabackend/domain"
-	"github.com/soarex16/fabackend/sql"
+	"github.com/soarex16/fabackend/stores"
 	"net/http"
 	"regexp"
 )
 
 type UsersHandler struct {
 	Handler
-	Users sql.UsersStore
+	Users stores.UsersStore
 }
 
 var loginRegex, _ = regexp.Compile(`^([a-zA-Z0-9_]){5,50}$`)
@@ -34,13 +35,27 @@ func (h *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Users.Add(usr)
+	// check if user with this name already exists
+	_, err = h.Users.FindByName(usr.Username)
 
 	if err != nil {
-		h.InternalServerError(w, r, err, "Error while creating user")
+		if err == sql.ErrNoRows {
+			_, err = h.Users.Add(usr)
+
+			if err != nil {
+				h.InternalServerError(w, r, err, "Error while creating user")
+			}
+
+			h.Created(w, r, "User was successfully added")
+		}
+		h.InternalServerError(w, r, err, "Error while getting user from db")
+		return
 	}
 
-	h.Created(w, r, "User was successfully added")
+	h.ModelValidationError(w, r, &ValidationErrors{
+		"username": "User with this name already exists",
+	})
+	return
 }
 
 // GetUserByName - return handler for route

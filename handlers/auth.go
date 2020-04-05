@@ -6,7 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/soarex16/fabackend/auth"
 	"github.com/soarex16/fabackend/domain"
-	"github.com/soarex16/fabackend/sql"
+	"github.com/soarex16/fabackend/stores"
 	"net/http"
 	"time"
 )
@@ -14,7 +14,7 @@ import (
 type AuthHandler struct {
 	Handler
 	JwtSecret []byte
-	Users     sql.UsersStore
+	Users     stores.UsersStore
 	Sessions  *auth.SessionStore
 }
 

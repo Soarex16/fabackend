@@ -1,4 +1,4 @@
-package sql
+package stores
 
 import (
 	"github.com/soarex16/fabackend/domain"
