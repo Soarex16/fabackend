@@ -148,13 +148,17 @@ func (h *AuthHandler) RefreshTokens(w http.ResponseWriter, r *http.Request) {
 	h.WriteJsonBody(w, r, authResp)
 }
 
+var accessTokenExpTime = time.Minute * 30
+var refreshTokenExpTime = time.Hour * 24 * 14
+
 func generateAuthCredentials(username string, jwtSecret []byte) (*auth.Credentials, error) {
 	// init user session
-	accessTokenExp := time.Now().Add(time.Minute * 30).Unix()
+	accessTokenExp := time.Now().Add(accessTokenExpTime).Unix()
 	accessClaims := auth.Claims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
+			Subject:   "access",
 			ExpiresAt: accessTokenExp,
 		},
 	}
@@ -165,11 +169,12 @@ func generateAuthCredentials(username string, jwtSecret []byte) (*auth.Credentia
 		return nil, err
 	}
 
-	refreshTokenExp := time.Now().Add(time.Hour * 24 * 14).Unix()
+	refreshTokenExp := time.Now().Add(refreshTokenExpTime).Unix()
 	refreshClaims := auth.Claims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
+			Subject:   "refresh",
 			ExpiresAt: refreshTokenExp,
 		},
 	}
