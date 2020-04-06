@@ -50,8 +50,10 @@ type ValidationErrors map[string]string
 
 // ModelValidationError - writes validation errors as json
 func (h *Handler) ModelValidationError(w http.ResponseWriter, r *http.Request, errs *ValidationErrors) {
-	h.UnprocessableEntity(w, r)
-	err := h.WriteJsonBody(w, r, errs)
+	reqId := h.RequestID(r)
+	logSuccessResponse(reqId, http.StatusUnprocessableEntity, fmt.Sprintf("Request at route: %v have errors in moder %v", r.URL.Path, errs))
+
+	err := h.WriteJsonBody(w, r, http.StatusUnprocessableEntity, errs)
 
 	// error already has been logged in WriteJsonBody
 	if err != nil {
@@ -60,7 +62,7 @@ func (h *Handler) ModelValidationError(w http.ResponseWriter, r *http.Request, e
 }
 
 // WriteJsonBody - writes resp as JSON into body and send success
-func (h *Handler) WriteJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) error {
+func (h *Handler) WriteJsonBody(w http.ResponseWriter, r *http.Request, statusCode int, obj interface{}) error {
 	bytes, err := json.Marshal(obj)
 
 	// NOTE: can cause "superfluous response.WriteHeader call" because we must
@@ -84,8 +86,7 @@ func (h *Handler) Ok(w http.ResponseWriter, r *http.Request) {
 
 // Created - 201 (Created)
 func (h *Handler) Created(w http.ResponseWriter, r *http.Request, resp interface{}) {
-	w.WriteHeader(http.StatusCreated)
-	err := h.WriteJsonBody(w, r, resp)
+	err := h.WriteJsonBody(w, r, http.StatusCreated, resp)
 
 	if err != nil {
 		return

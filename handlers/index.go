@@ -10,5 +10,5 @@ type IndexHandler struct {
 
 // Index - stub for index route
 func (h *Handler) Index(w http.ResponseWriter, r *http.Request) {
-	h.WriteJsonBody(w, r, "Hello World!")
+	h.WriteJsonBody(w, r, http.StatusOK, "Hello World!")
 }

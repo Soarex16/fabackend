@@ -99,5 +99,5 @@ func (h *AchievementsHandler) GetUserAchievements(w http.ResponseWriter, r *http
 		return
 	}
 
-	h.WriteJsonBody(w, r, achievements)
+	h.WriteJsonBody(w, r, http.StatusOK, achievements)
 }

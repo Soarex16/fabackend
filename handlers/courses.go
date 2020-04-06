@@ -19,5 +19,5 @@ func (h *CoursesHandler) GetAllCources(w http.ResponseWriter, r *http.Request) {
 		h.InternalServerError(w, r, err, "Error while courses data from db")
 	}
 
-	h.WriteJsonBody(w, r, courses)
+	h.WriteJsonBody(w, r, http.StatusOK, courses)
 }

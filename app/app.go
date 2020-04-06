@@ -2,7 +2,7 @@ package app
 
 import (
 	"database/sql"
-	"github.com/julienschmidt/httprouter"
+	"net/http"
 
 	"github.com/sirupsen/logrus"
 	"github.com/soarex16/fabackend/routes"
@@ -15,7 +15,7 @@ import (
 type App struct {
 	Config *Config
 	Store  *Store
-	Router *httprouter.Router
+	Router http.Handler
 }
 
 // New - initializes configuration, routes, db

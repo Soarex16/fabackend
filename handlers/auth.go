@@ -69,7 +69,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		AccessedRoutes: accessedRoutes,
 	})
 
-	h.WriteJsonBody(w, r, authResp)
+	h.WriteJsonBody(w, r, http.StatusOK, authResp)
 }
 
 type refreshTokensDto struct {
@@ -145,7 +145,7 @@ func (h *AuthHandler) RefreshTokens(w http.ResponseWriter, r *http.Request) {
 		AccessedRoutes: prevSession.AccessedRoutes,
 	})
 
-	h.WriteJsonBody(w, r, authResp)
+	h.WriteJsonBody(w, r, http.StatusOK, authResp)
 }
 
 var accessTokenExpTime = time.Minute * 30

@@ -74,7 +74,7 @@ func (h *UsersHandler) GetUserByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.WriteJsonBody(w, r, usr)
+	h.WriteJsonBody(w, r, http.StatusOK, usr)
 }
 
 // UpdateUser - return handler for route
