@@ -42,8 +42,8 @@ var generateSampleDbCmd = &cobra.Command{
 
 		const addUsersSQL = `
 			INSERT INTO users VALUES
-				('abb9cb3c-d405-4a5b-8f68-0a2ffb9e47d3', 'sample', 'sample@mail.com', 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf'),
-				('5eb94ee3-7d81-4303-9988-29847dd136ad', 'example', 'example@mail.com', '50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c')
+				('abb9cb3c-d405-4a5b-8f68-0a2ffb9e47d3', 'testuser', 'testuser@email.com', 'ae5deb822e0d71992900471a7199d0d95b8e7c9d05c40a8245a281fd2c1d6684'),
+				('5eb94ee3-7d81-4303-9988-29847dd136ad', 'testuser22', 'testuser22@email.com', '42695a23e040f65053a4d0c4f51c7a2ef8239603b281cdddab7390970f292c92')
 				ON CONFLICT (id) DO NOTHING;
 		`
 
