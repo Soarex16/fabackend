@@ -7,6 +7,12 @@ import (
 
 // SessionStore - in-memory storage for users sessions
 // third-party key-value libraries (like pudge) are not used, because the planned load on the service is small
+// in-memory cache of a limited size, a queue, and a database. When a new session is registered,
+//
+// TODO: elegant solution for storing many sessions:
+//  https://softwareengineering.stackexchange.com/questions/278276/user-sessions-in-a-web-server-speed-or-persistence
+// it stays in the cache and is put into the queue. A background thread keeps reading the queue and
+// putting the new sessions into the database. (Another background process would periodically expire them.)
 type SessionStore struct {
 	AccessTokens map[string]*Session
 	atM          sync.RWMutex
