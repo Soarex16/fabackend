@@ -29,9 +29,7 @@ func NewRouter(routes *Routes) http.Handler {
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "PATCH", "POST", "PUT", "OPTIONS", "DELETE"},
 		AllowedHeaders:   []string{"Content-Type", "Origin", "Accept", "Content-Length", "Accept-Encoding", "Authorization"},
-		ExposedHeaders:   nil,
 		AllowCredentials: true,
-		Debug:            true,
 	})
 
 	router := httprouter.New()
