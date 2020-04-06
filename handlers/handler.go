@@ -59,7 +59,7 @@ func (h *Handler) ModelValidationError(w http.ResponseWriter, r *http.Request, e
 	}
 }
 
-// Ok - writes resp as JSON into body and send success
+// WriteJsonBody - writes resp as JSON into body and send success
 func (h *Handler) WriteJsonBody(w http.ResponseWriter, r *http.Request, obj interface{}) error {
 	bytes, err := json.Marshal(obj)
 

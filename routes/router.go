@@ -30,6 +30,7 @@ func NewRouter(routes *Routes) *httprouter.Router {
 		handler := route.Handler
 
 		handler = middlewares.Logging(handler)
+		handler = middlewares.CORS(handler)
 		handler = middlewares.RequestID(handler)
 
 		router.Handler(
