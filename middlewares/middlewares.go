@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"github.com/google/uuid"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"github.com/soarex16/fabackend/auth"
 	"net/http"
@@ -129,5 +130,23 @@ func Authorization(next http.Handler, store *auth.SessionStore) http.Handler {
 		)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func CORS(next http.Handler) http.Handler {
+	c := cors.New(cors.Options{
+		AllowedMethods:   []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            true,
+	})
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := c.Handler(next)
+		h.ServeHTTP(w, r)
+
+		logrus.
+			WithField("headers", w.Header()).
+			Info("processed CORS")
 	})
 }

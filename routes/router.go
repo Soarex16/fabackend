@@ -5,8 +5,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/soarex16/fabackend/middlewares"
-
-	"github.com/rs/cors"
 )
 
 // Route - type for defining all route information
@@ -28,18 +26,11 @@ type RouteParams map[string]string
 func NewRouter(routes *Routes) *httprouter.Router {
 	router := httprouter.New()
 
-	c := cors.New(cors.Options{
-		AllowedMethods:   []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		Debug:            true,
-	})
-
 	for _, route := range *routes {
 		handler := route.Handler
 
 		handler = middlewares.Logging(handler)
-		handler = c.Handler(handler)
+		handler = middlewares.CORS(handler)
 		handler = middlewares.RequestID(handler)
 
 		router.Handler(
