@@ -29,10 +29,10 @@ func NewRouter(routes *Routes) *httprouter.Router {
 	router := httprouter.New()
 
 	c := cors.New(cors.Options{
-		AllowedMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
-
+		AllowedMethods:   []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		Debug:            false,
+		Debug:            true,
 	})
 
 	for _, route := range *routes {
