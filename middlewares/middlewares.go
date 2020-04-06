@@ -142,11 +142,13 @@ func CORS(next http.Handler) http.Handler {
 	})
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logrus.Info("start CORS middleware")
+
 		h := c.Handler(next)
 		h.ServeHTTP(w, r)
 
 		logrus.
 			WithField("headers", w.Header()).
-			Info("processed CORS")
+			Info("proccessed CORS")
 	})
 }
