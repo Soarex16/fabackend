@@ -3,7 +3,6 @@ package middlewares
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"github.com/soarex16/fabackend/auth"
 	"net/http"
@@ -134,18 +133,19 @@ func Authorization(next http.Handler, store *auth.SessionStore) http.Handler {
 }
 
 func CORS(next http.Handler) http.Handler {
-	c := cors.New(cors.Options{
-		AllowedMethods:   []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		Debug:            true,
-	})
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logrus.Info("start CORS middleware")
 
-		h := c.Handler(next)
-		h.ServeHTTP(w, r)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Host, Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+
+		// Stop here if its Preflighted OPTIONS request
+		if r.Method == "OPTIONS" {
+			return
+		}
+
+		next.ServeHTTP(w, r)
 
 		logrus.
 			WithField("headers", w.Header()).
