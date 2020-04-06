@@ -134,9 +134,11 @@ func Authorization(next http.Handler, store *auth.SessionStore) http.Handler {
 
 func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logrus.Info("start CORS middleware")
+
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Host, Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
 
 		// Stop here if its Preflighted OPTIONS request
 		if r.Method == "OPTIONS" {
@@ -144,5 +146,9 @@ func CORS(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(w, r)
+
+		logrus.
+			WithField("headers", w.Header()).
+			Info("proccessed CORS")
 	})
 }
