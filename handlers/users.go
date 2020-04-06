@@ -14,7 +14,7 @@ type UsersHandler struct {
 	Users stores.UsersStore
 }
 
-var loginRegex, _ = regexp.Compile(`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,50}$`)
+var loginRegex, _ = regexp.Compile(`^[A-Za-z\d]{8,50}$`)
 var emailRegex, _ = regexp.Compile(`^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$`)
 var pwdRegex, _ = regexp.Compile(`[A-Fa-f0-9]{64}`)
 

@@ -73,6 +73,7 @@ func (h *Handler) WriteJsonBody(w http.ResponseWriter, r *http.Request, statusCo
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(statusCode)
 	w.Write(bytes)
 
 	return nil
