@@ -33,13 +33,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate user
-	if !emailRegex.MatchString(usr.Email) || !pwdRegex.MatchString(usr.Password) {
+	if !loginRegex.MatchString(usr.Username) || !pwdRegex.MatchString(usr.Password) {
 		h.Unauthorized(w, r)
 		return
 	}
 
 	// find in db
-	dbUsr, err := h.Users.FindByEmail(usr.Email)
+	dbUsr, err := h.Users.FindByName(usr.Username)
 
 	if err != nil {
 		h.InternalServerError(w, r, err, "Error while fetching user from db")

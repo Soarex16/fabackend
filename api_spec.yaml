@@ -58,15 +58,15 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                username:
                   type: string
-                  description: The user email for login
+                  description: The user login
                 password:
                   type: string
                   format: password
                   description: The password for login in clear text
               required:
-                - email
+                - username
                 - password
       responses:
         '200':

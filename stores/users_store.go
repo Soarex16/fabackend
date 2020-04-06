@@ -43,15 +43,16 @@ func (s *PqUsersStore) Add(u *domain.User) (bool, error) {
 }
 
 // FindByName - finds user with specified username
+// NOTE: Also returns password!
 func (s *PqUsersStore) FindByName(username string) (*domain.User, error) {
 	const query = `
-		SELECT id, username, email
+		SELECT id, username, email, password
 		FROM users
 		WHERE users.username = $1;
 	`
 
 	u := domain.User{}
-	err := s.DB.QueryRow(query, username).Scan(&u.ID, &u.Username, &u.Email)
+	err := s.DB.QueryRow(query, username).Scan(&u.ID, &u.Username, &u.Email, &u.Password)
 
 	if err != nil {
 		logDBErr(err, query, "Error, while querying user from DB")
@@ -62,6 +63,7 @@ func (s *PqUsersStore) FindByName(username string) (*domain.User, error) {
 }
 
 // FindByName - finds user with specified email
+// NOTE: Also returns password!
 func (s *PqUsersStore) FindByEmail(email string) (*domain.User, error) {
 	const query = `
 		SELECT id, username, email, password

@@ -74,6 +74,8 @@ func (h *UsersHandler) GetUserByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// because UsersStore also returns pwd
+	usr.Password = ""
 	h.WriteJsonBody(w, r, http.StatusOK, usr)
 }
 
