@@ -76,7 +76,7 @@ type refreshTokensDto struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
-// RefreshTokens - session refreshing when token expires
+// refreshTokens - session refreshing when token expires
 // POST /auth/refresh
 func (h *AuthHandler) RefreshTokens(w http.ResponseWriter, r *http.Request) {
 	dto := &refreshTokensDto{}

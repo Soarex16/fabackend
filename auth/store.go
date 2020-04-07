@@ -14,17 +14,17 @@ import (
 // it stays in the cache and is put into the queue. A background thread keeps reading the queue and
 // putting the new sessions into the database. (Another background process would periodically expire them.)
 type SessionStore struct {
-	AccessTokens map[string]*Session
+	accessTokens map[string]*Session
 	atM          sync.RWMutex
 
-	RefreshTokens map[string]*Session
+	refreshTokens map[string]*Session
 	rtM           sync.RWMutex
 }
 
 func NewSessionStore() *SessionStore {
 	s := &SessionStore{
-		AccessTokens:  make(map[string]*Session),
-		RefreshTokens: make(map[string]*Session),
+		accessTokens:  make(map[string]*Session),
+		refreshTokens: make(map[string]*Session),
 	}
 
 	return s
@@ -35,18 +35,18 @@ func (s *SessionStore) Add(session *Session) {
 	fmt.Println(session.AccessToken)
 
 	s.atM.Lock()
-	s.AccessTokens[session.AccessToken] = session
+	s.accessTokens[session.AccessToken] = session
 	s.atM.Unlock()
 
 	s.rtM.Lock()
-	s.RefreshTokens[session.RefreshToken] = session
+	s.refreshTokens[session.RefreshToken] = session
 	s.rtM.Unlock()
 }
 
 // GetByAccessToken - get session by access token
 func (s *SessionStore) GetByAccessToken(tok string) (*Session, bool) {
 	s.atM.RLock()
-	v, ok := s.AccessTokens[tok]
+	v, ok := s.accessTokens[tok]
 	s.atM.RUnlock()
 
 	if ok {
@@ -59,7 +59,7 @@ func (s *SessionStore) GetByAccessToken(tok string) (*Session, bool) {
 // GetByRefreshToken - get session by refresh token
 func (s *SessionStore) GetByRefreshToken(tok string) (*Session, bool) {
 	s.rtM.RLock()
-	v, ok := s.RefreshTokens[tok]
+	v, ok := s.refreshTokens[tok]
 	s.rtM.RUnlock()
 
 	if ok {
@@ -78,11 +78,11 @@ func (s *SessionStore) RemoveByAccessToken(tok string) *Session {
 	}
 
 	s.atM.Lock()
-	delete(s.AccessTokens, session.AccessToken)
+	delete(s.accessTokens, session.AccessToken)
 	s.atM.Unlock()
 
 	s.rtM.Lock()
-	delete(s.RefreshTokens, session.RefreshToken)
+	delete(s.refreshTokens, session.RefreshToken)
 	s.rtM.Unlock()
 
 	return session
@@ -97,11 +97,11 @@ func (s *SessionStore) RemoveByRefreshToken(tok string) *Session {
 	}
 
 	s.atM.Lock()
-	delete(s.AccessTokens, session.AccessToken)
+	delete(s.accessTokens, session.AccessToken)
 	s.atM.Unlock()
 
 	s.rtM.Lock()
-	delete(s.RefreshTokens, session.RefreshToken)
+	delete(s.refreshTokens, session.RefreshToken)
 	s.rtM.Unlock()
 
 	return session

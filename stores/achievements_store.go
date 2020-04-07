@@ -57,7 +57,7 @@ func (s *PqAchievementsStore) GetByUsername(username string) (*[]domain.Achievem
 func (s *PqAchievementsStore) Add(userId uuid.UUID, ach *domain.Achievement) (bool, error) {
 	const query = `
 		INSERT INTO achievements(date, description, iconcolor, price, title, userid) VALUES
-			($1, $2, $3, $4, $5);
+			($1, $2, $3, $4, $5, $6);
 	`
 
 	stmt, _ := s.DB.Prepare(query)
